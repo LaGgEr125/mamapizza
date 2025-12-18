@@ -31,7 +31,7 @@ include("include/header.php");
     </div>
 </section>
 
-<section>
+<section id="menuLinks">
     <div class="navbar-1" id="top-bar">
         <img src="assets/image/логотип.png">
         <a class="nav-button" href="#">Комбо</a>
@@ -141,7 +141,27 @@ include("include/header.php");
         </div>
     </div>
 </section>
-
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const navbar = document.getElementById('top-bar');
+    const menuLinksSection = document.getElementById('menuLinks');
+    
+    function handleScroll() {
+        const scrollPosition = window.scrollY;
+        const menuLinksOffset = menuLinksSection.offsetTop;
+        
+        if (scrollPosition > menuLinksOffset) {
+            navbar.classList.add('fixed', 'scrolled');
+        } else {
+            navbar.classList.remove('fixed', 'scrolled');
+        }
+    }
+    
+    window.addEventListener('scroll', handleScroll);
+    
+    handleScroll();
+});
+</script>
 <?php
 include("include/footer.php");
 ?>
