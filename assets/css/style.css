@@ -1,0 +1,243 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #FF8904;
+}
+
+footer {
+    background-color: #181818;
+}
+
+.header {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-content: space-between;
+}
+
+.header-logo {
+    display: flex;
+    flex-direction: row;
+}
+
+.header-logo img {
+    width: 125px;
+    height: auto;
+}
+
+.header-name {
+    color: white;
+    font-size: 2rem;
+    margin-top: 1.5rem;
+}
+
+.header-description {
+    color: white;
+    font-size: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.header-btn {
+    display: flex;
+    justify-content: end;
+}
+
+.header-btn a {
+    margin-top: 2.25rem;
+    margin-right: 2rem;
+    height: 30px;
+    background: red;
+    color: white;
+    border: none;
+    text-decoration: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-size: 1.5rem;
+}
+
+.footer-important {
+    display: grid;
+    grid-template-columns: repeat(4, 25%);
+    justify-content: center;
+    padding: 1.5rem 15rem;
+}
+
+.footer-important li {
+    color: white;
+    list-style-type: none;
+    font-size: 1rem;
+    padding-top: 0.5rem;
+}
+
+.footer-name {
+    color: gray !important;
+    font-size: 1.25rem !important;
+}
+
+.footer-important img {
+    padding: 0.25rem;
+}
+
+.footer-information {
+    display: grid;
+    grid-template-columns: repeat(2, 25%);
+    justify-content: start;
+    padding: 0.5rem 15rem 3rem;
+}
+
+.footer-information li {
+    list-style-type: none;
+    color: gray;
+    font-size: 1rem;
+}
+
+.footer-information-name {
+    color: white !important;
+    font-size: 1.75rem !important;
+    padding-top: 3rem;
+}
+
+footer hr {
+    margin: auto;
+    background-color: white;
+    width: 95%;
+}
+
+.legal-information {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 3rem 15rem;
+}
+
+.legal-information-p {
+    display: flex;
+    flex-direction: row;
+}
+
+.legal-information-p p {
+    color: grey;
+    padding: 0 4rem 0 0;
+    font-size: 1rem;
+}
+
+.mamapizza {
+    padding: 0.5rem 15rem 2rem;
+}
+
+.mamapizza li {
+    list-style-type: none;
+    color: gray;
+    font-size: 1rem;
+}
+
+.cart-stock {
+display: grid;
+grid-template-columns: repeat(5, 1fr);
+background-color: #DB7400;
+text-align: center;
+padding: 3rem;
+/* box-shadow: 0 0 10px black; */
+}
+
+.cart-stock img {
+    width: 40%;
+}
+
+.cart-stock p {
+    color: white;
+    font-size: 2rem;
+}
+
+
+
+
+
+
+
+    .navbar-1 {
+        display: flex;
+        align-items: center;
+        padding: 15px 20px;
+        background-color: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        position: sticky; /* или fixed, в зависимости от нужного поведения */
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+    }
+    
+    /* Стили когда панель закреплена (fixed) */
+    .navbar-1.fixed {
+        position: fixed;
+        animation: slideDown 0.3s ease;
+        padding: 10px 20px; /* Можно уменьшить padding при фиксации */
+    }
+    
+    /* Анимация появления закрепленной панели */
+    @keyframes slideDown {
+        from {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    /* Логотип */
+    .navbar-1 img {
+        height: 40px;
+        margin-right: 30px;
+        transition: height 0.3s ease;
+    }
+    
+    /* Уменьшение логотипа при фиксации */
+    .navbar-1.fixed img {
+        height: 35px;
+    }
+    
+    /* Кнопки навигации */
+    .nav-button {
+        margin: 0 15px;
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+        font-size: 16px;
+        transition: color 0.3s ease;
+        padding: 8px 0;
+        position: relative;
+    }
+    
+    /* Эффект при наведении */
+    .nav-button:hover {
+        color: #ff6b35; /* Цвет можно изменить под ваш дизайн */
+    }
+    
+    /* Подчеркивание активной ссылки */
+    .nav-button::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background-color: #ff6b35;
+        transition: width 0.3s ease;
+    }
+    
+    .nav-button:hover::after {
+        width: 100%;
+    }
+    
+    /* Контент для демонстрации прокрутки */
+    .content {
+        height: 2000px;
+        padding: 20px;
+        background: linear-gradient(180deg, #f8f8f8 0%, #fff 100%);
+    }
