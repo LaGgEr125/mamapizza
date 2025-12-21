@@ -1,5 +1,6 @@
 <?php
-include("include/header_account.php");
+$title = "Аккаунт";
+include("include/header.php");
 ?>
 
 <div class="account">
