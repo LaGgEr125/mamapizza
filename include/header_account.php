@@ -20,7 +20,7 @@
                 </div>
             </div>
             <div class="header-button">
-                <a href="account.php">Личный кабинет</a>
+                <a href="index.php">Главная</a>
             </div>
         </div>
     </header>

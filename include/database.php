@@ -1,13 +1,12 @@
 <?php
-$host = "localhost";
-$db = "mompizza";
-$user = "root";
-$pasword = "";
+$user = 'root';
+$password = '';
+$db = 'mompizza';
+$host = 'localhost';
 
-$conn = mysqli_connect($host, $user, $pasword, $db);
-
-if ($conn->connect_error) {
-    die("Ошибка соединения: ".$conn->connect_error);
+$mysqli = new mysqli($host,$user,$password,$db,);
+if ($mysqli->connect_error) {
+    die ("error rom MYDAK" . $mysqli->connect_error); 
 }
 
 ?>
