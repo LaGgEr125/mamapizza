@@ -1373,6 +1373,24 @@ dialog.dialog-wrapper[open]::backdrop {
     padding: 5rem;
 }
 
+.account h3 {
+    padding: 1rem 0 1rem 0;
+    font-size: 1.5rem;
+}
+
+.account select {
+    background-color: white;
+    border: 1px solid gray;
+    color: gray;
+
+    padding: 0.25rem;
+}
+
+.select-container {
+    display: flex;
+    gap: 0;
+}
+
 .account h1 {
     padding-bottom: 2rem;
 }
@@ -1387,21 +1405,355 @@ dialog.dialog-wrapper[open]::backdrop {
     padding: 1rem 0 1rem 0;
 }
 
-.account-input input {
-    width: 20%;
-    height: 30px;
-    border: none;
-    border-radius: 5px;
-    box-shadow: 0 1px 3px black;
-}
-
-.account-orders {
+.account-container {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    padding: 40px;
+    font-family: sans-serif;
+    gap: 60px;
 }
 
-.account-history {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+.account-column {
+    flex: 1;
+}
 
+.account-column h1 {
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    width: 300px;
+}
+
+.input-group label {
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.input-group input {
+    height: 35px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 0 10px;
+    outline: none;
+}
+
+.birth-date-section h3,
+.mammacoins-section h3 {
+    font-size: 16px;
+    margin: 20px 0 10px 0;
+}
+
+.select-container {
+    display: flex;
+    gap: 10px;
+}
+
+.select-container select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: white;
+    color: #666;
+}
+
+.mammacoins-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 120px;
+    padding: 5px 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.mammacoins-card span {
+    font-weight: bold;
+    color: #ff8c00;
+}
+
+.mammacoins-card img {
+    width: 30px;
+    height: 30px;
+}
+
+.order-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    max-width: 450px;
+}
+
+.order-header {
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.order-status {
+    text-align: right;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 13px;
+    width: fit-content;
+    justify-self: end;
+}
+
+.status-delivered {
+    background-color: #d4ffd4;
+    color: #28a745;
+}
+
+.status-cancelled {
+    background-color: #ffcccc;
+    color: #ff4d4d;
+}
+
+.order-price {
+    font-size: 14px;
+    color: #333;
+}
+
+.order-link {
+    text-align: right;
+    text-decoration: none;
+    color: #ff8c00;
+    font-size: 14px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.checkout {
+    padding: 40px;
+    background: #f8f8f8;
+}
+
+.checkout-container {
+    display: flex;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* FORM */
+.checkout-form {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    flex: 2;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.checkout-title {
+    margin-bottom: 25px;
+    font-size: 24px;
+    color: #333;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.checkout-field {
+    margin-bottom: 25px;
+}
+
+.checkout-field-row {
+    display: flex;
+    align-items: flex-start;
+}
+
+.checkout-label {
+    width: 180px;
+    padding-top: 12px;
+    margin-right: 20px;
+    font-weight: bold;
+    color: #333;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.checkout-input-wrapper {
+    flex: 1;
+}
+
+.checkout-input,
+.checkout-textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    box-sizing: border-box;
+    background: #f9f9f9;
+}
+
+.checkout-input:focus,
+.checkout-textarea:focus {
+    outline: none;
+    border-color: #ff6a00;
+    background: #fff;
+}
+
+.checkout-textarea {
+    resize: none;
+    height: 80px;
+    font-family: inherit;
+}
+
+.checkout-change {
+    margin-top: 8px;
+    background: none;
+    border: none;
+    color: #ff6a00;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 0;
+    text-decoration: underline;
+    display: block;
+}
+
+.checkout-change:hover {
+    color: #e55a00;
+}
+
+/* Разделительная линия между полями и чеком */
+.checkout-divider-full {
+    height: 1px;
+    background: #e0e0e0;
+    margin: 30px 0 20px 0;
+    width: 100%;
+}
+
+/* TIME */
+.checkout-time {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-top: 8px;
+}
+
+.checkout-time-btn {
+    padding: 10px 16px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    background: #f1f1f1;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.checkout-time-btn:hover {
+    background: #e0e0e0;
+}
+
+.checkout-time-btn--active {
+    background: #ff6a00;
+    color: #fff;
+    border: none;
+}
+
+.checkout-time-btn--active:hover {
+    background: #e55a00;
+}
+
+/* SUMMARY */
+.checkout-summary {
+    background: #f1f1f1;
+    padding: 25px;
+    border-radius: 12px;
+    flex: 1;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    min-height: 500px;
+}
+
+.checkout-summary-title {
+    margin-bottom: 15px;
+    font-size: 20px;
+    color: #333;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.checkout-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 auto 0;
+}
+
+.checkout-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: #333;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.checkout-item:last-child {
+    border-bottom: none;
+}
+
+.checkout-divider {
+    height: 1px;
+    background: #ccc;
+    margin: 15px 0;
+}
+
+.checkout-total-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #333;
+}
+
+.checkout-total-row--bold {
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #ccc;
+}
+
+.checkout-submit {
+    width: 100%;
+    margin-top: auto;
+    padding: 14px;
+    border-radius: 25px;
+    border: none;
+    background: #ff6a00;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.checkout-submit:hover {
+    background: #e55a00;
 }
