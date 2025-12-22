@@ -9,7 +9,7 @@
     <title><?= htmlspecialchars($title) ?> | Мамапицца</title>
 </head>
 
-<body>
+<body id="body">
     <header>
         <div class="header">
             <div class="header-logo">
@@ -21,7 +21,7 @@
             </div>
 
             <div class="header-button">
-                <?php if ($title !== 'Аккаунт'): ?>
+                <?php if ($title !== 'Аккаунт' && $title !== "Чекаут"): ?>
                     <a href="account.php">Личный кабинет</a>
                 <?php else: ?>
                     <a href="index.php">На главную</a>
