@@ -150,6 +150,188 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     });
+
+    // === Новое: работа с корзиной через AJAX (использует api/cart.php) ===
+    async function fetchCartState() {
+        try {
+            const res = await fetch('api/cart.php?action=get', { headers: { 'Accept': 'application/json' } });
+            const data = await res.json();
+            if (data.success) updateCartUI(data);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function formatPrice(v) { return Math.round(v) + ' ₽'; }
+
+    function updateCartUI(data) {
+        const countEl = document.getElementById('offcanvasCartCount');
+        const totalEl = document.getElementById('offcanvasCartTotal');
+        const summaryCount = document.getElementById('summaryCount');
+        const summaryTotal = document.getElementById('summaryTotal');
+        const finalSum = document.getElementById('finalSum');
+        const coins = document.getElementById('summaryCoins');
+        if (countEl) countEl.textContent = data.count || 0;
+        if (totalEl) totalEl.textContent = formatPrice(data.total || 0);
+        if (summaryCount) summaryCount.textContent = (data.count || 0) + ' товар(ов)';
+        if (summaryTotal) summaryTotal.textContent = formatPrice(data.total || 0);
+        if (finalSum) finalSum.textContent = formatPrice(data.total || 0);
+        if (coins) coins.textContent = Math.floor((data.total || 0) / 20);
+
+        const bodyEl = document.querySelector('.offcanvas-body');
+        if (!bodyEl) return;
+        bodyEl.innerHTML = '';
+        if (!data.items || data.items.length === 0) {
+            bodyEl.innerHTML = '<div style="padding:20px;">Корзина пуста</div>';
+            return;
+        }
+        data.items.forEach(it => {
+            const div = document.createElement('div');
+            div.className = 'cart-card';
+            div.innerHTML = `
+                <div class="cart-card-main">
+                    <img src="assets/image/${it.img}" class="cart-card-img" alt="">
+                    <div class="cart-card-info">
+                        <div class="cart-card-header">
+                            <h3>${it.name}</h3>
+                            <button class="remove-item" data-key="${it.key}">✕</button>
+                        </div>
+                        <p class="cart-card-desc">${it.size ? it.size : ''} см</p>
+                        <div class="cart-card-footer">
+                            <div class="cart-card-prices"><span class="price-actual">${formatPrice(it.price)}</span></div>
+                            <div class="cart-card-controls">
+                                <button class="change-btn">Изменить</button>
+                                <div class="quantity-pill">
+                                    <button class="q-minus" data-key="${it.key}">−</button>
+                                    <span class="q-num" data-key="${it.key}">${it.quantity}</span>
+                                    <button class="q-plus" data-key="${it.key}">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            bodyEl.appendChild(div);
+        });
+    }
+
+    // Перехват submit форм добавления в корзину
+    document.body.addEventListener('submit', function(e) {
+        const form = e.target.closest && e.target.closest('.add-to-cart-form');
+        if (!form) return;
+        e.preventDefault();
+
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
+
+        const actionUrl = form.getAttribute('action') || 'api/cart.php?action=add';
+        const fd = new FormData(form);
+        fetch(actionUrl, { method: 'POST', body: fd, headers: { 'Accept': 'application/json' } })
+            .then(r => r.json())
+            .then(json => {
+                if (json.success) {
+                    // обновим корзину и откроем оффканвас
+                    fetchCartState();
+                    toggleCart(true);
+
+                    // Закрываем родительский dialog, если указано
+                    try {
+                        const dlg = form.closest('dialog');
+                        if (dlg && (form.dataset.closeModal === "1" || form.hasAttribute('data-close-modal'))) {
+                            if (typeof dlg.close === 'function') dlg.close();
+                        }
+                    } catch (err) { /* silent */ }
+                } else {
+                    alert(json.message || 'Ошибка добавления');
+                }
+            })
+            .catch(() => {
+                alert('Ошибка сети');
+            })
+            .finally(() => {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    // небольшая визуальная обратная связь
+                    submitBtn.blur();
+                }
+            });
+    });
+
+    // Делегирование кликов внутри оффканваса: удалить/плюс/минус
+    document.body.addEventListener('click', function(e){
+        const rem = e.target.closest('.remove-item');
+        if (rem) {
+            const key = rem.dataset.key;
+            fetch('api/cart.php?action=remove', { method: 'POST', body: new URLSearchParams({ key }), headers: { 'Accept': 'application/json' } })
+                .then(r => r.json()).then(()=> fetchCartState());
+            return;
+        }
+        const plus = e.target.closest('.q-plus');
+        if (plus) {
+            const key = plus.dataset.key;
+            const numEl = document.querySelector(`.q-num[data-key="${key}"]`);
+            const cur = parseInt(numEl?.textContent || '1', 10);
+            const newQty = cur + 1;
+            fetch('api/cart.php?action=update', { method: 'POST', body: new URLSearchParams({ key, quantity: newQty }), headers: { 'Accept': 'application/json' } })
+                .then(r => r.json()).then(()=> fetchCartState());
+            return;
+        }
+        const minus = e.target.closest('.q-minus');
+        if (minus) {
+            const key = minus.dataset.key;
+            const numEl = document.querySelector(`.q-num[data-key="${key}"]`);
+            const cur = parseInt(numEl?.textContent || '1', 10);
+            const newQty = Math.max(0, cur - 1);
+            fetch('api/cart.php?action=update', { method: 'POST', body: new URLSearchParams({ key, quantity: newQty }), headers: { 'Accept': 'application/json' } })
+                .then(r => r.json()).then(()=> fetchCartState());
+            return;
+        }
+    });
+
+    // Инициализация: получить состояние корзины при загрузке
+    fetchCartState();
+
+    // === Обработчик кнопки "К оформлению заказа" ===
+    const checkoutBtn = document.getElementById('openCheckoutBtn');
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const cart = document.querySelectorAll('.offcanvas-body .cart-card');
+            if (cart.length === 0) {
+                alert('Корзина пуста');
+                return;
+            }
+            // Редирект на страницу оформления заказа
+            window.location.href = './checkout.php';
+        });
+    }
+
+    // --- 6. АВТОРИЗАЦИЯ (LOGIN/REGISTER) ---
+    const authForms = document.querySelectorAll('.auth-form');
+    const authLinks = document.querySelectorAll('[data-auth-target]');
+
+    authLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = this.dataset.authTarget;
+            authForms.forEach(form => {
+                if (form.classList.contains('auth-active')) {
+                    form.classList.remove('auth-active');
+                } else if (form.classList.contains(target)) {
+                    form.classList.add('auth-active');
+                }
+            });
+        });
+    });
+
+    // Закрытие модалки авторизации по клику вне области формы
+    document.addEventListener('click', function(e) {
+        const isClickInside = e.target.closest('.auth-form');
+        const isAuthActive = document.querySelector('.auth-form.auth-active');
+        if (!isClickInside && isAuthActive) {
+            isAuthActive.classList.remove('auth-active');
+        }
+    });
 });
 
 function authShowRegister() {

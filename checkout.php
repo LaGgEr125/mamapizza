@@ -1,7 +1,34 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) session_start();
+require_once 'include/database.php';
+require_once 'include/cart_functions.php';
+
 $type = isset($_GET['type']) ? $_GET['type'] : 'delivery';
 $title = "Чекаут";
 include("include/header.php");
+
+// Получаем корзину из сессии
+$cart = cart_get_items();
+$total = cart_total();
+
+// Получаем данные пользователя из БД если авторизован
+$userName = '';
+$userPhone = '';
+$userAddress = '';
+
+if (!empty($_SESSION['user_id'])) {
+    $userId = (int)$_SESSION['user_id'];
+    $stmt = $mysqli->prepare("SELECT first_name, phone FROM users WHERE id = ? LIMIT 1");
+    $stmt->bind_param('i', $userId);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    if ($user = $res->fetch_assoc()) {
+        $userName = $user['first_name'] ?? '';
+        $userPhone = $user['phone'] ?? '';
+        $userAddress = $user['address'] ?? '';
+    }
+    $stmt->close();
+}
 
 $pizzerias = [
     'Серпухов' => [
@@ -142,7 +169,6 @@ $pizzerias = [
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    /* SUMMARY RIGHT */
     .checkout-summary {
         background: #fff;
         padding: 25px;
@@ -193,10 +219,9 @@ $pizzerias = [
     }
 
     .checkout-summary-footer {
-        margin-top: 100%;
+        margin-top: auto;
     }
 
-    /* MODAL DO-DO STYLE */
     .modal-overlay {
         position: fixed;
         top: 0;
@@ -230,7 +255,6 @@ $pizzerias = [
             transform: translateY(50px);
             opacity: 0;
         }
-
         to {
             transform: translateY(0);
             opacity: 1;
@@ -318,10 +342,6 @@ $pizzerias = [
     .hidden {
         display: none !important;
     }
-
-    .checkout-delivery-input {
-        display: block;
-    }
 </style>
 
 <div class="checkout" id="checkout-root" data-type="<?php echo $type; ?>">
@@ -339,7 +359,7 @@ $pizzerias = [
             <div class="checkout-field">
                 <div class="checkout-field-row">
                     <label class="checkout-label">Имя</label>
-                    <div class="checkout-input-wrapper"><input type="text" class="checkout-input" placeholder="Ваше имя"></div>
+                    <div class="checkout-input-wrapper"><input type="text" class="checkout-input js-name-input" placeholder="Ваше имя" value="<?php echo htmlspecialchars($userName); ?>"></div>
                 </div>
             </div>
 
@@ -347,7 +367,7 @@ $pizzerias = [
                 <div class="checkout-field-row">
                     <label class="checkout-label">Номер телефона</label>
                     <div class="checkout-input-wrapper">
-                        <input type="text" class="checkout-input js-phone-input" placeholder="8 (000) 000 00 00" maxlength="15">
+                        <input type="text" class="checkout-input js-phone-input" placeholder="8 (000) 000 00 00" value="<?php echo htmlspecialchars($userPhone); ?>">
                     </div>
                 </div>
             </div>
@@ -360,13 +380,11 @@ $pizzerias = [
                     <div class="checkout-input-wrapper">
                         <div id="js-pickup-view" class="checkout-address-box <?php echo ($type === 'delivery') ? 'hidden' : ''; ?>">
                             <p class="checkout-address-text" id="js-address-display">Выберите пиццерию</p>
-                            <button class="checkout-change" id="js-open-pizzeria-modal">Изменить</button>
+                            <button class="checkout-change" id="js-open-pizzeria-modal" type="button">Изменить</button>
                         </div>
 
                         <div id="js-delivery-view" class="<?php echo ($type === 'pickup') ? 'hidden' : ''; ?>">
-                            <input type="text" class="checkout-input" id="js-delivery-input" 
-                                   placeholder="Город, улица, дом, квартира" 
-                                   value="деревня Шепилово, городской округ Серпухов, Московская область">
+                            <input type="text" class="checkout-input js-delivery-input" placeholder="Город, улица, дом, квартира" value="<?php echo htmlspecialchars($userAddress); ?>">
                         </div>
                     </div>
                 </div>
@@ -379,9 +397,9 @@ $pizzerias = [
                     </label>
                     <div class="checkout-input-wrapper">
                         <div class="checkout-time">
-                            <button class="checkout-time-btn checkout-time-btn--active">Побыстрее</button>
-                            <button class="checkout-time-btn">17:45</button>
-                            <button class="checkout-time-btn">Другое время</button>
+                            <button class="checkout-time-btn checkout-time-btn--active" type="button">Побыстрее</button>
+                            <button class="checkout-time-btn" type="button">17:45</button>
+                            <button class="checkout-time-btn" type="button">Другое время</button>
                         </div>
                     </div>
                 </div>
@@ -391,12 +409,13 @@ $pizzerias = [
         <aside class="checkout-summary">
             <h3 class="checkout-summary-title">МамаПицца</h3>
             <ul class="checkout-list">
-                <li class="checkout-item"><span>Пицца пепперони</span><span>666 ₽</span></li>
-                <li class="checkout-item"><span>Кока-Кола</span><span>150 ₽</span></li>
+                <?php foreach ($cart as $item): ?>
+                    <li class="checkout-item"><span><?php echo htmlspecialchars($item['name']); ?> <?php echo $item['size'] ? '(' . htmlspecialchars($item['size']) . ')' : ''; ?></span><span><?php echo $item['quantity']; ?> × <?php echo $item['price']; ?> ₽</span></li>
+                <?php endforeach; ?>
             </ul>
             <div class="checkout-summary-footer">
-                <div class="checkout-total-row checkout-total-row--bold"><span>Итоговая сумма:</span><span>1000 ₽</span></div>
-                <button class="checkout-submit" id="js-submit-order">Оформить</button>
+                <div class="checkout-total-row checkout-total-row--bold"><span>Итоговая сумма:</span><span id="js-total-display"><?php echo $total; ?> ₽</span></div>
+                <button class="checkout-submit" id="js-submit-order" type="button">Оформить</button>
             </div>
         </aside>
     </div>
@@ -406,7 +425,7 @@ $pizzerias = [
     <div class="modal-content">
         <div class="modal-header">
             <h3>Выберите пиццерию</h3>
-            <button class="modal-close" id="js-modal-close">&times;</button>
+            <button class="modal-close" id="js-modal-close" type="button">&times;</button>
         </div>
         <div class="modal-body">
             <div class="city-tabs">
@@ -417,9 +436,9 @@ $pizzerias = [
                 <?php foreach ($pizzerias as $city => $list): ?>
                     <div class="city-content" id="city-<?php echo $city; ?>" style="<?php echo $city === 'Серпухов' ? '' : 'display:none;'; ?>">
                         <?php foreach ($list as $piz): ?>
-                            <div class="pizzeria-card" data-full-addr="<?php echo $city . ', ' . $piz['addr']; ?>">
-                                <h4><?php echo $piz['addr']; ?></h4>
-                                <p>Режим работы: <?php echo $piz['work']; ?></p>
+                            <div class="pizzeria-card" data-full-addr="<?php echo htmlspecialchars($city . ', ' . $piz['addr']); ?>">
+                                <h4><?php echo htmlspecialchars($piz['addr']); ?></h4>
+                                <p>Режим работы: <?php echo htmlspecialchars($piz['work']); ?></p>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -431,35 +450,22 @@ $pizzerias = [
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // Элементы управления типом заказа
     const root = document.getElementById('checkout-root');
     const typeToggle = document.getElementById('js-type-toggle');
-    
-    // Элементы времени
-    const timeContainer = document.getElementById('js-time-container') || document.querySelector('.checkout-time');
-    const otherTimeBtn = document.getElementById('js-other-time-trigger');
-    const customPicker = document.getElementById('js-custom-picker');
-    const hourSelect = document.getElementById('js-hours');
-
-    // Элементы модалки
     const modal = document.getElementById('js-modal');
     const openModalBtn = document.getElementById('js-open-pizzeria-modal');
     const closeModalBtn = document.getElementById('js-modal-close');
 
-    // 1. ДИНАМИЧЕСКАЯ СМЕНА ТИПА (GET в URL + Интерфейс)
     if (typeToggle && root) {
         typeToggle.addEventListener('click', () => {
             const isDelivery = root.dataset.type === 'delivery';
             const newType = isDelivery ? 'pickup' : 'delivery';
-            
             root.dataset.type = newType;
 
-            // Обновляем URL без перезагрузки
             const url = new URL(window.location);
             url.searchParams.set('type', newType);
             window.history.pushState({}, '', url);
 
-            // Обновляем тексты
             const titleEl = document.getElementById('js-main-title');
             const addrLabelEl = document.getElementById('js-address-label');
             const timeLabelEl = document.getElementById('js-time-label');
@@ -469,55 +475,21 @@ document.addEventListener('DOMContentLoaded', () => {
             if (timeLabelEl) timeLabelEl.textContent = isDelivery ? 'Время самовывоза' : 'Время доставки';
             typeToggle.textContent = isDelivery ? 'Доставка' : 'Самовывоз';
 
-            // Переключаем блоки
             const pickupView = document.getElementById('js-pickup-view');
             const deliveryView = document.getElementById('js-delivery-view');
-            
             if (pickupView) pickupView.classList.toggle('hidden', newType === 'delivery');
             if (deliveryView) deliveryView.classList.toggle('hidden', newType === 'pickup');
         });
     }
 
-    // 2. ЛОГИКА ВЫБОРА ВРЕМЕНИ
-    function initTimeSystem() {
-        if (!timeContainer) return; // Если контейнера нет, выходим из функции без ошибки
-
-        const now = new Date();
-        const curH = now.getHours();
-        
-        // Удаляем старые кнопки слотов
-        document.querySelectorAll('.js-dynamic-slot').forEach(el => el.remove());
-
-
-
-        if (hourSelect) {
-            hourSelect.innerHTML = '';
-            for (let h = curH; h <= 23; h++) {
-                const opt = document.createElement('option');
-                opt.value = h;
-                opt.textContent = h.toString().padStart(2, '0');
-                hourSelect.appendChild(opt);
-            }
-        }
-    }
-
-    function selectTime(btn) {
-        document.querySelectorAll('.checkout-time-btn').forEach(b => b.classList.remove('checkout-time-btn--active'));
-        btn.classList.add('checkout-time-btn--active');
-        if (customPicker) {
-            customPicker.classList.toggle('active', btn === otherTimeBtn);
-        }
-    }
-
-    // Обработка клика по существующим кнопкам времени
     document.querySelectorAll('.checkout-time-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
-            selectTime(btn);
+            document.querySelectorAll('.checkout-time-btn').forEach(b => b.classList.remove('checkout-time-btn--active'));
+            btn.classList.add('checkout-time-btn--active');
         });
     });
 
-    // 3. МОДАЛЬНОЕ ОКНО И ТАБЫ
     if (openModalBtn) {
         openModalBtn.onclick = (e) => {
             e.preventDefault();
@@ -543,28 +515,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Табы городов
     document.querySelectorAll('.city-tab').forEach(tab => {
         tab.onclick = function() {
             document.querySelectorAll('.city-tab').forEach(t => t.classList.remove('active'));
             this.classList.add('active');
-            
             const city = this.dataset.city;
             document.querySelectorAll('.city-content').forEach(c => c.style.display = 'none');
-            
-            // Ищем контент по ID (учитываем разные варианты именования)
-            const content = document.getElementById(`city-${city}`) || document.getElementById(`modal-city-${city}`);
+            const content = document.getElementById(`city-${city}`);
             if (content) content.style.display = 'block';
         }
     });
 
-    // Выбор карточки пиццерии
     document.querySelectorAll('.pizzeria-card').forEach(card => {
         card.onclick = function() {
-            const addr = this.dataset.fullAddr || this.dataset.addr;
+            const addr = this.dataset.fullAddr;
             const display = document.getElementById('js-address-display');
             if (display) display.textContent = addr;
-            
             if (modal) {
                 modal.classList.remove('active');
                 document.body.style.overflow = '';
@@ -572,7 +538,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 4. МАСКА ТЕЛЕФОНА
     const phoneInput = document.querySelector('.js-phone-input');
     if (phoneInput) {
         phoneInput.addEventListener('input', (e) => {
@@ -588,9 +553,32 @@ document.addEventListener('DOMContentLoaded', () => {
             e.target.value = res;
         });
     }
+});
 
-    // Запуск системы времени
-    initTimeSystem();
+document.getElementById('js-submit-order')?.addEventListener('click', function(e){
+    e.preventDefault();
+    const name = document.querySelector('.js-name-input')?.value || '';
+    const phone = document.querySelector('.js-phone-input')?.value || '';
+    const address = document.getElementById('js-delivery-view').classList.contains('hidden') 
+        ? document.getElementById('js-address-display').textContent 
+        : document.querySelector('.js-delivery-input')?.value || '';
+
+    if (!name || !phone || !address) {
+        alert('Заполните все обязательные поля');
+        return;
+    }
+
+    const fd = new FormData();
+    fd.append('action','create');
+    fd.append('name', name);
+    fd.append('phone', phone);
+    fd.append('delivery_address', address);
+
+    fetch('./api/order.php', { method: 'POST', body: fd, headers: { 'Accept': 'application/json' } })
+        .then(r=>r.json()).then(data=>{
+            if (data.success) window.location.href = './thankyou.php?order_id=' + data.order_id;
+            else alert(data.message || 'Ошибка оформления');
+        }).catch(()=> alert('Ошибка сети'));
 });
 </script>
 
