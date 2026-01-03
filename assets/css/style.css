@@ -1531,3 +1531,168 @@ dialog.dialog-wrapper[open]::backdrop {
     color: #ff8c00;
     font-size: 14px;
 }
+
+
+.auth-container {
+    width: 100%;
+    height: 50vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-box {
+    width: 360px;
+    background: #e0e0e0;
+    border-radius: 12px;
+    padding: 30px 25px;
+    text-align: center;
+}
+
+.auth-title {
+    margin-bottom: 25px;
+    font-size: 20px;
+}
+
+.auth-input {
+    width: 90%;
+    padding: 10px 14px;
+    margin-bottom: 15px;
+    border-radius: 20px;
+    border: none;
+    outline: none;
+}
+
+.auth-text {
+    font-size: 13px;
+    margin-bottom: 15px;
+}
+
+.auth-switch {
+    background: none;
+    border: none;
+    color: #ff5a00;
+    cursor: pointer;
+    padding: 0;
+}
+
+.auth-switch:hover {
+    text-decoration: underline;
+}
+
+.auth-button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 20px;
+    border: none;
+    background: #ff3d00;
+    color: #fff;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.auth-button:hover {
+    background: #e63600;
+}
+
+/* Логика показа */
+.auth-form {
+    display: none;
+}
+
+.auth-form.auth-active {
+    display: block;
+}
+
+
+.thankyou-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+}
+
+.thankyou-title {
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.thankyou-subtitle {
+    text-align: center;
+    color: #777;
+    margin-bottom: 25px;
+}
+
+.thankyou-video {
+    background: #2f2f2f;
+    color: #fff;
+    height: 200px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.thankyou-live {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: red;
+    font-size: 14px;
+}
+
+.thankyou-video-text {
+    opacity: 0.8;
+}
+
+.thankyou-status {
+    display: flex;
+    justify-content: space-between;
+    margin: 25px 0;
+}
+
+.thankyou-step {
+    font-size: 14px;
+    color: #999;
+}
+
+.thankyou-step.active {
+    color: #ff7a00;
+    font-weight: bold;
+}
+
+.thankyou-order-title {
+    margin-bottom: 15px;
+}
+
+.thankyou-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.thankyou-total {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+.thankyou-pay-button {
+    width: 100%;
+    margin-top: 30px;
+    padding: 15px;
+    background-color: #ff7a00;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+.thankyou-pay-button:hover {
+    background-color: #e86c00;
+}

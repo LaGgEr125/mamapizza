@@ -151,3 +151,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+function authShowRegister() {
+    document.querySelector('.auth-form-login').classList.remove('auth-active');
+    document.querySelector('.auth-form-register').classList.add('auth-active');
+}
+
+function authShowLogin() {
+    document.querySelector('.auth-form-register').classList.remove('auth-active');
+    document.querySelector('.auth-form-login').classList.add('auth-active');
+}
